@@ -295,9 +295,9 @@ class LLaMA_adapter(nn.Module):
         self.set_default_trainability()
 
     def compute_logits(self, img_emb, text_emb):
-        self.logit_scale.data = torch.clamp(self.logit_scale.data, 0, 4.6052)
-        logit_scale = self.logit_scale.exp()
-        logits_per_text = torch.matmul(text_emb, img_emb.t()) * logit_scale
+        self.logit_scale.data = torch.clamp(self.logit_scale.data, 0, 4.6052) # 将输入张量的元素限制在指定的 范围 内
+        logit_scale = self.logit_scale.exp() # 计算 e 的幂
+        logits_per_text = torch.matmul(text_emb, img_emb.t()) * logit_scale # 计算图像与文本的相似度
         return logits_per_text.t()
     
     def softce_clip_loss(self, logits_per_text, target_pseudo):
@@ -390,7 +390,7 @@ class LLaMA_adapter(nn.Module):
 
         text_feats = self.adapter_text(Keyword)
         text_feats = F.normalize(text_feats)
-        logits_per_image = self.compute_logits(visual_feats, text_feats)
+        logits_per_image = self.compute_logits(visual_feats, text_feats) # 计算visual_feats与text_feats的相似性
         logits_per_text = logits_per_image.t()
 
         # Compute cross-entropy loss
